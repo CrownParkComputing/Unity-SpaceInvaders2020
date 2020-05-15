@@ -8,14 +8,10 @@ public class DestroyOnBoundary : MonoBehaviour
 	{
         if (other.gameObject.CompareTag("Boundary"))
         {
-            if (gameObject.tag == "PlayerShot")
-            {
-                gameObject.SetActive(false);
-            }
+            if (gameObject.tag.Contains("Shot"))
+             {gameObject.SetActive(false);}
             else
-            {
-                Destroy(gameObject);
-            }
+            { Destroy(gameObject);}
         }
     }
 }
