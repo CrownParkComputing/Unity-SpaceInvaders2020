@@ -61,12 +61,16 @@ public class GameManager : MonoBehaviour
     void OnEnable()
     {
         CountdownText.OnCountdownFinished += OnCountdownFinished;
+        InvaderController.OnPlayerScores += OnPlayerScored;
+        PlayerController.OnPlayerDied += OnPlayerDied;
         SetPageState(PageState.Start);
     }
 
     void OnDisable()
     {
         CountdownText.OnCountdownFinished -= OnCountdownFinished;
+        InvaderController.OnPlayerScores -= OnPlayerScored;
+        PlayerController.OnPlayerDied -= OnPlayerDied;
     }
     void SpawnEnemyWaves()
     {
@@ -78,7 +82,7 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i <= invaderRows; i++)
         {
-            nextRowY += 0.75f;
+            nextRowY += 1.0f;
             for (int x = 0; x <= invadersPerRow; x++)
             {
                 Vector3 topLeft = new Vector3(nextSpawnX, nextRowY);
@@ -116,8 +120,8 @@ public class GameManager : MonoBehaviour
     }
     void OnPlayerScored()
     {
-        currentScore++;
-        scoreText.text = currentScore.ToString();
+        currentScore += 50;
+        scoreText.text = "Score : " + currentScore.ToString();
     }
     void OnPlayerDied()
     {
@@ -167,8 +171,9 @@ public class GameManager : MonoBehaviour
     // activate when replay hit
     {
         OnGameOverConfirmed(); //event
-        //scoreText.text = "Score : 0";
         SetPageState(PageState.Start);
+        currentScore = 0;
+        scoreText.text = "Score : " + currentScore.ToString();
     }
 
     public void StartGame()

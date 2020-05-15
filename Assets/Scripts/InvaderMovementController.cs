@@ -20,10 +20,6 @@ public class InvaderMovementController : MonoBehaviour
 
 	void Update()
 	{
-		maxX = 6.0f;
-		minX = -6.0f;
-		maxY = 6.0f;
-		minY = -6.0f;
 
 		objectRigidbody = transform.GetComponent<Rigidbody2D>();
 		Vector3 newPosition = new Vector3();
