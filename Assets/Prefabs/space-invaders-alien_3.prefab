@@ -10,8 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4230739511560102562}
   - component: {fileID: 8538309890269012105}
-  - component: {fileID: 919974998007535824}
-  - component: {fileID: 6700868234912986601}
   - component: {fileID: 2414285842005457349}
   - component: {fileID: 3612360410294173979}
   - component: {fileID: 3716658893990103239}
@@ -88,33 +86,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &919974998007535824
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2295403564179888009}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a02b93ffaa5713944a46e56873918916, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minReloadTime: 2
-  maxReloadTime: 10
---- !u!114 &6700868234912986601
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2295403564179888009}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b4e9fb3af63510a449b4a4374a9d37e5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 0.5
 --- !u!61 &2414285842005457349
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -174,8 +145,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a02b93ffaa5713944a46e56873918916, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minReloadTime: 5
-  maxReloadTime: 10
+  minReloadTime: 10
+  maxReloadTime: 20
 --- !u!114 &7938164334685502201
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -188,4 +159,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4e9fb3af63510a449b4a4374a9d37e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 0.2
+  moveSpeed: 1

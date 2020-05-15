@@ -4,14 +4,16 @@ using UnityEngine;
 
 public class InvaderController : MonoBehaviour
 {
+    public delegate void InvaderGotShot();
+    public static event InvaderGotShot OnPlayerScores;
 
     public float minReloadTime = 5.0f;
     public float maxReloadTime = 10.0f;
 
-    // Start is called before the first frame update
+
     void Start()
     {
-        StartCoroutine("Shoot");
+        StartCoroutine("Shoot");   
     }
 
     IEnumerator Shoot()
@@ -35,13 +37,14 @@ public class InvaderController : MonoBehaviour
         if (other.gameObject.CompareTag("PlayerShot"))
         {
             GameObject explosion = ObjectPooler.SharedInstance.GetPooledObject("Explosion");
-            if (explosion != null)
-            {
-                explosion.transform.position = transform.position;
-                explosion.transform.rotation = transform.rotation;
-                explosion.SetActive(true);
-            }
+
+            explosion.transform.position = transform.position;
+            explosion.transform.rotation = transform.rotation;
+            explosion.SetActive(true);
+            gameObject.SetActive(false); 
             other.gameObject.SetActive(false);
+
+            OnPlayerScores();
         }   
 
 

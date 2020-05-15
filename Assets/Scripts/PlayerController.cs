@@ -6,11 +6,10 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
 {
+    public int NumberofLives = 3;
     public float moveSpeed = 1.0f;
     public float ShotTurretReloadTime = 2.0f;
 
-    public GameObject playerShot;
-    public GameObject explosion;
     public GameObject playerMainGun;
 
     private List<GameObject> activePlayerTurrets;
@@ -20,21 +19,18 @@ public class PlayerController : MonoBehaviour
     private BoxCollider2D playerCollider;
     new Rigidbody2D rigidbody = new Rigidbody2D();
 
-
-    private GameObject leftBoundary;
-    private GameObject rightBoundary;
-    private GameObject topBoundary;
-    private GameObject bottomBoundary;
+    public delegate void PlayerDied();
+    public static event PlayerDied OnPlayerDied;
 
     private AudioSource shootSound;
 
+    private float maxX = 6.5f;
+    private float minX = -6.5f;
+    private float maxY = 6.0f;
+    private float minY = -6.0f;
+
     void Start()
     {
-        leftBoundary = GameManager.SharedInstance.leftBoundary;
-        rightBoundary = GameManager.SharedInstance.rightBoundary;
-        topBoundary = GameManager.SharedInstance.topBoundary;
-        bottomBoundary = GameManager.SharedInstance.bottomBoundary;
-
         activePlayerTurrets = new List<GameObject>();
         activePlayerTurrets.Add(playerMainGun);
         playerCollider = gameObject.GetComponent<BoxCollider2D>();
@@ -79,20 +75,34 @@ public class PlayerController : MonoBehaviour
         float yDir = rigidbody.position.y;
         rigidbody.velocity = new Vector2(xDir * moveSpeed, yDir * moveSpeed);
         rigidbody.position = new Vector2(
-                Mathf.Clamp(rigidbody.position.x, leftBoundary.transform.position.x, rightBoundary.transform.position.x),
-                Mathf.Clamp(rigidbody.position.y, bottomBoundary.transform.position.y, topBoundary.transform.position.y)
+                Mathf.Clamp(rigidbody.position.x, minX, maxX),
+                Mathf.Clamp(rigidbody.position.y, minY, maxY)
             );
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("Base"))
+        if (other.gameObject.CompareTag("InvaderShot"))
         {
-            if (gameObject.tag == "PlayerShot")
-            { gameObject.SetActive(false); }
+            gameObject.SetActive(false);
+            GameObject explosion = ObjectPooler.SharedInstance.GetPooledObject("Explosion");
+            explosion.transform.position = transform.position;
+            explosion.transform.rotation = transform.rotation;
+            explosion.SetActive(true);
+            other.gameObject.SetActive(false);
+
+            if (NumberofLives > 1)
+            {
+                gameObject.SetActive(true);
+                NumberofLives -= 1;
+
+            }
             else
-            { Destroy(gameObject); }
+            {
+                OnPlayerDied();
+            }
         }
+        
     }
 
     void Shoot()

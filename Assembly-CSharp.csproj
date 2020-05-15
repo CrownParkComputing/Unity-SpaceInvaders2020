@@ -67,6 +67,7 @@
     <Compile Include="Assets\Scripts\Boundary.cs" />
     <Compile Include="Assets\Scripts\CountdownText.cs" />
     <Compile Include="Assets\Scripts\DestroyOnBoundary.cs" />
+    <Compile Include="Assets\Scripts\ExplosionController.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\HighscoreText.cs" />
     <Compile Include="Assets\Scripts\InvaderBulletController.cs" />
