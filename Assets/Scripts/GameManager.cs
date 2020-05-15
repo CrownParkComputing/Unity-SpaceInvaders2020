@@ -16,10 +16,16 @@ public class GameManager : MonoBehaviour
     public GameObject gameOverPage;
     public GameObject countdownPage;
     public Text scoreText;
+    public float startWait = 1.0f;
 
+    public float waveInterval = 2.0f;
+ 
     public GameObject enemyType1;
     public GameObject enemyType2;
+    public GameObject enemyType3;
+    public GameObject enemySaucer;
 
+    private GameObject RenderAlien;
 
     public GameObject leftBoundary;                   //
     public GameObject rightBoundary;                  // References to the screen bounds: Used to ensure the player
@@ -34,6 +40,13 @@ public class GameManager : MonoBehaviour
         Countdown,
     }
 
+    enum InvaderType
+    {
+        Alien1,
+        Alien2,
+        Alien3,
+        AlienSaucer,
+    }
     private int currentScore = 0;
     bool gameOver = true;
 
@@ -55,29 +68,47 @@ public class GameManager : MonoBehaviour
     {
         CountdownText.OnCountdownFinished -= OnCountdownFinished;
     }
-
-
-    void Start()
+    void SpawnEnemyWaves()
     {
-        //StartCoroutine(SpawnEnemyWaves());
+        int invadersPerRow = 14;
+        int invaderRows = 6;
+        float nextRowY = -1f;
+        float nextSpawnX = -5.0f;
+        int invaderType = 0;
+
+        for (int i = 0; i <= invaderRows; i++)
+        {
+            nextRowY += 0.75f;
+            for (int x = 0; x <= invadersPerRow; x++)
+            {
+                Vector3 topLeft = new Vector3(nextSpawnX, nextRowY);
+
+                Vector3 spawnPosition = new Vector3(topLeft.x, topLeft.y, (10+x));
+                Quaternion spawnRotation = Quaternion.Euler(0, 0, 0);
+                string invaderTag = "Invader" + invaderType.ToString();
+                GameObject invader = ObjectPooler.SharedInstance.GetPooledObject(invaderTag);
+                if (invader != null)
+                {
+                    invader.transform.position = spawnPosition;
+                    invader.transform.rotation = spawnRotation;
+                    invader.SetActive(true);
+                }
+                nextSpawnX += 0.75f;
+            }
+
+            nextSpawnX = -5.0f;
+
+            if (invaderType == 3)
+            { invaderType = 0; }
+            else
+            { invaderType += 1; }
+
+        }
     }
 
-    //IEnumerator SpawnEnemyWaves()
-    //{
-    //    while (true)
-    //    {
-    //        for (int i = 0; i < 5; i++)
-    //        {
-    //            Vector3 topLeft = Camera.main.ScreenToWorldPoint(new Vector3(0, Camera.main.pixelHeight + 2, 0));
-    //            Vector3 topRight = Camera.main.ScreenToWorldPoint(new Vector3(Camera.main.pixelWidth, Camera.main.pixelHeight + 2, 0));
-    //            Vector3 spawnPosition = new Vector3(Random.Range(topLeft.x, topRight.x), topLeft.y, 0);
-    //            Quaternion spawnRotation = Quaternion.Euler(0, 0, 180);
-    //            Instantiate(enemyType1, spawnPosition, spawnRotation);
-    //        }
-    //    }
-    //}
     void OnCountdownFinished()
     {
+        SpawnEnemyWaves();
         SetPageState(PageState.None);
         OnGameStarted();
         currentScore = 0;
@@ -99,7 +130,6 @@ public class GameManager : MonoBehaviour
         SetPageState(PageState.GameOver);
 
     }
-
 
     void SetPageState(PageState state)
     {
@@ -131,7 +161,6 @@ public class GameManager : MonoBehaviour
                 break;
 
         }
-
     }
 
     public void ConfirmGameOver()

@@ -5,12 +5,17 @@ TagManager:
   serializedVersion: 2
   tags:
   - PlayerShot
-  - Invader
   - Base
   - Boundary
   - ShipTurret
   - InvaderShot
-  - InvaderBullet
+  - Invader2
+  - Invader0
+  - Invader1
+  - Invader3
+  - Invader
+  - InvaderDeath
+  - Explosion
   layers:
   - Default
   - TransparentFX

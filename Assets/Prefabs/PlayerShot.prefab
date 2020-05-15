@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4172611998670858530}
   - component: {fileID: 4955475497557445001}
   - component: {fileID: 2173681309122135261}
-  - component: {fileID: 5348941966057998200}
+  - component: {fileID: -7947086202553652565}
   m_Layer: 0
   m_Name: PlayerShot
   m_TagString: PlayerShot
@@ -93,7 +93,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1169443879575258044}
-  m_BodyType: 1
+  m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -145,7 +145,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 3
---- !u!114 &5348941966057998200
+--- !u!114 &-7947086202553652565
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

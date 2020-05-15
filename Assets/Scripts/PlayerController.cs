@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
 {
     public float moveSpeed = 1.0f;
     public float ShotTurretReloadTime = 2.0f;
-    
+
     public GameObject playerShot;
     public GameObject explosion;
     public GameObject playerMainGun;
@@ -27,7 +27,6 @@ public class PlayerController : MonoBehaviour
     private GameObject bottomBoundary;
 
     private AudioSource shootSound;
-    private float nextFire;
 
     void Start()
     {
@@ -35,6 +34,7 @@ public class PlayerController : MonoBehaviour
         rightBoundary = GameManager.SharedInstance.rightBoundary;
         topBoundary = GameManager.SharedInstance.topBoundary;
         bottomBoundary = GameManager.SharedInstance.bottomBoundary;
+
         activePlayerTurrets = new List<GameObject>();
         activePlayerTurrets.Add(playerMainGun);
         playerCollider = gameObject.GetComponent<BoxCollider2D>();
@@ -68,14 +68,13 @@ public class PlayerController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if (Input.GetKeyDown("space"))
         {
             Shoot();
         }
 
-        //if (game.GameOver) return;
         float xDir = Input.GetAxis("Horizontal");
         float yDir = rigidbody.position.y;
         rigidbody.velocity = new Vector2(xDir * moveSpeed, yDir * moveSpeed);
@@ -90,9 +89,9 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.CompareTag("Base"))
         {
             if (gameObject.tag == "PlayerShot")
-            { gameObject.SetActive(false);}
+            { gameObject.SetActive(false); }
             else
-            {Destroy(gameObject);}
+            { Destroy(gameObject); }
         }
     }
 
@@ -108,10 +107,11 @@ public class PlayerController : MonoBehaviour
                     bullet.transform.position = turret.transform.position;
                     bullet.transform.rotation = turret.transform.rotation;
                     bullet.SetActive(true);
+                    shootSound.Play();
                 }
             }
         }
-        //shootSound.Play();
+
     }
 
 }
