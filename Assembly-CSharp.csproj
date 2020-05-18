@@ -72,7 +72,7 @@
     <Compile Include="Assets\Scripts\HighscoreText.cs" />
     <Compile Include="Assets\Scripts\InvaderBulletController.cs" />
     <Compile Include="Assets\Scripts\InvaderController.cs" />
-    <Compile Include="Assets\Scripts\InvaderMovementController.cs" />
+    <Compile Include="Assets\Scripts\InvaderGroupController.cs" />
     <Compile Include="Assets\Scripts\ObjectPooler.cs" />
     <Compile Include="Assets\Scripts\PlayerBulletController.cs" />
     <Compile Include="Assets\Scripts\PlayerController.cs" />

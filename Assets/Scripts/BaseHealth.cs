@@ -8,12 +8,12 @@ public class BaseHealth : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("PlayerShot") && gameObject.CompareTag("Base"))
+        if (other.gameObject.CompareTag("PlayerShot"))
         {
             other.gameObject.SetActive(false);  
         }
 
-        if (other.gameObject.CompareTag("InvaderShot") && gameObject.CompareTag("Base"))
+        if (other.gameObject.CompareTag("EnemyBomb"))
         {
             if (health <= 0)
                 Destroy(gameObject);

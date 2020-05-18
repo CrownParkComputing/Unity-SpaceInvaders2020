@@ -7,14 +7,17 @@ public class ObjectPoolItem
 {
     public int amountToPool;
     public GameObject objectToPool;
+    public GameObject storeHere;
+
     public bool shouldExpand;
 }
-    
+
 public class ObjectPooler : MonoBehaviour
 {
     public List<ObjectPoolItem> itemsToPool;
     public static ObjectPooler SharedInstance;
     public List<GameObject> pooledObjects;
+    public List<GameObject> pooledObjectByTag;
 
 
     void Awake()
@@ -27,10 +30,9 @@ public class ObjectPooler : MonoBehaviour
         pooledObjects = new List<GameObject>();
         foreach (ObjectPoolItem item in itemsToPool)
         {
-            GameObject holder = new GameObject(item.objectToPool.name + "Holder");
+            GameObject holder = item.storeHere;
             for (int i = 0; i < item.amountToPool; i++)
             {
-                
                 GameObject obj = (GameObject)Instantiate(item.objectToPool);
                 obj.transform.parent = holder.transform;
                 obj.SetActive(false);
@@ -42,14 +44,14 @@ public class ObjectPooler : MonoBehaviour
     {
         for (int i = 0; i < pooledObjects.Count; i++)
         {
-            if (!pooledObjects[i].activeInHierarchy && pooledObjects[i].CompareTag(tag))
+            if (!pooledObjects[i].activeInHierarchy && pooledObjects[i].tag.Contains(tag))
             {
                 return pooledObjects[i];
             }
         }
         foreach (ObjectPoolItem item in itemsToPool)
         {
-            if (item.objectToPool.CompareTag(tag))
+            if (item.objectToPool.tag.Contains(tag))
             {
                 if (item.shouldExpand)
                 {
@@ -61,5 +63,20 @@ public class ObjectPooler : MonoBehaviour
             }
         }
         return null;
+    }
+
+    public List<GameObject> GetAllPooledObjectsByTag(string tag)
+    {
+
+        pooledObjectByTag = new List<GameObject>();
+        for (int i = 0; i < pooledObjects.Count; i++)
+        {
+            if (pooledObjects[i].activeInHierarchy && pooledObjects[i].tag.Contains(tag))
+        {
+                pooledObjectByTag.Add(pooledObjects[i]);
+            }
+        }
+
+        return pooledObjectByTag;
     }
 }
