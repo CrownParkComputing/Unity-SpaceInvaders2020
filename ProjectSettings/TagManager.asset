@@ -13,9 +13,12 @@ TagManager:
   - Invader0
   - Invader1
   - Invader3
-  - Invader
   - InvaderDeath
   - Explosion
+  - EnemyBomb
+  - Invader4
+  - Invader5
+  - Invader6
   layers:
   - Default
   - TransparentFX
