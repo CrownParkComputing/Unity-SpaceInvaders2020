@@ -6,7 +6,11 @@ public class InvaderGroupController : MonoBehaviour
 {
     public float startWait = 1.0f;
     public float moveSpeed = 0.2f;
-    
+    public float acceleration = 0.2f;
+    public int invadersPerRow = 12;
+    public int invaderRows = 6;
+    public int totalInvaders;
+
     private Vector3 movementLeft = new Vector3(1.0f, 0.0f, 0.0f);
     private Vector3 movementRight = new Vector3(-1.0f, 0.0f, 0.0f);
 
@@ -32,6 +36,7 @@ public class InvaderGroupController : MonoBehaviour
     {
 
         game = GameManager.SharedInstance;
+        totalInvaders = invaderRows * invadersPerRow;
     }
 
 
@@ -41,8 +46,18 @@ public class InvaderGroupController : MonoBehaviour
         if (game.GameOver) return;
         else
         {
+            
             string invaderTag = "Invader";
+            float maxSpeed = 5.0f;
             List<GameObject> invaderRow = ObjectPooler.SharedInstance.GetAllPooledObjectsByTag(invaderTag);
+
+            if (invaderRow.Count < totalInvaders && moveSpeed <= maxSpeed)
+            {
+                  moveSpeed += acceleration ;
+                totalInvaders = invaderRow.Count;
+
+            }
+
 
             if (invaderRow.Count > 0)
             {
@@ -82,8 +97,7 @@ public class InvaderGroupController : MonoBehaviour
 
     void SpawnEnemyWaves()
     {
-        int invadersPerRow = 12;
-        int invaderRows = 6;
+
         float nextRowY = 8.0f;
         float nextSpawnX = -5.0f;
 

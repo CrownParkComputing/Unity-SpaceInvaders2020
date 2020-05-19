@@ -84,11 +84,21 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.CompareTag("EnemyBomb"))
         {
+
             gameObject.SetActive(false);
             GameObject explosion = ObjectPooler.SharedInstance.GetPooledObject("Explosion");
             explosion.transform.position = transform.position;
             explosion.transform.rotation = transform.rotation;
             explosion.SetActive(true);
+
+            for (int i = 0; i < 8; i++)
+            {
+
+                Vector3 randomOffset = new Vector3(transform.position.x + Random.Range(-0.6f, 0.6f), transform.position.y + Random.Range(-0.6f, 0.6f), 0.0f);
+                explosion.transform.position = randomOffset;
+                explosion.SetActive(true);
+            }
+
             other.gameObject.SetActive(false);
 
             if (NumberofLives > 1)
@@ -102,7 +112,18 @@ public class PlayerController : MonoBehaviour
                 OnPlayerDied();
             }
         }
-        
+
+        if (other.gameObject.tag.Contains("Invader"))
+        {
+            gameObject.SetActive(false);
+            GameObject explosion = ObjectPooler.SharedInstance.GetPooledObject("Explosion");
+            explosion.transform.position = transform.position;
+            explosion.transform.rotation = transform.rotation;
+            explosion.SetActive(true);
+            other.gameObject.SetActive(false);
+            OnPlayerDied();
+        }
+
     }
 
     void Shoot()
@@ -118,10 +139,24 @@ public class PlayerController : MonoBehaviour
                     bullet.transform.rotation = turret.transform.rotation;
                     bullet.SetActive(true);
                     shootSound.Play();
+                    //StartCoroutine("Delay");
                 }
             }
         }
 
     }
+
+    //IEnumerator Delay()
+    //{
+
+    //    // The ScatterShot turret is shot independantly of the spacebar
+    //    // This Coroutine shoots the scatteshot at a reload interval
+
+    //    while (true)
+    //    {
+
+    //        yield return new WaitForSeconds(0.5f);
+    //    }
+    //}
 
 }

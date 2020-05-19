@@ -36,7 +36,7 @@ public class InvaderController : MonoBehaviour
 				bullet.transform.position = transform.position;
 				bullet.transform.rotation = transform.rotation;
 				bullet.SetActive(true);
-			}
+  			}
 			yield return new WaitForSeconds((Random.Range(minReloadTime, maxReloadTime)));
 		}
 	}

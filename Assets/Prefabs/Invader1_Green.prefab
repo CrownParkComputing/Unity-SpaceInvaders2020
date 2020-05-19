@@ -142,5 +142,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4e9fb3af63510a449b4a4374a9d37e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minReloadTime: 5
-  maxReloadTime: 10
+  minReloadTime: 10
+  maxReloadTime: 20
