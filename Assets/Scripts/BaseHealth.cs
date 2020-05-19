@@ -22,5 +22,11 @@ public class BaseHealth : MonoBehaviour
             
             other.gameObject.SetActive(false);
         }
+
+        if (other.gameObject.tag.Contains("Invader"))
+        {
+           Destroy(gameObject);
+           other.gameObject.SetActive(false);
+        }
     }
 }
