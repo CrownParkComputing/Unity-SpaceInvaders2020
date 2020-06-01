@@ -8,15 +8,15 @@ public class InvaderController : MonoBehaviour
 	public float minReloadTime = 5.0f;
 	public float maxReloadTime = 10.0f;
 
-	public delegate void InvaderGotShot();
+	public delegate void InvaderGotShot(string whatHit);
 	public static event InvaderGotShot OnPlayerScores;
 	
 	GameManager game;
 
-	void Start()
+    void Start()
 	{
-		StartCoroutine("Shoot");
 		game = GameManager.SharedInstance;
+		StartCoroutine("Shoot");
 	}
 
 	void Update()
@@ -27,7 +27,7 @@ public class InvaderController : MonoBehaviour
 
 	IEnumerator Shoot()
 	{
-		yield return new WaitForSeconds((Random.Range(minReloadTime, maxReloadTime)));
+		yield return new WaitForSeconds(Random.Range(minReloadTime, maxReloadTime));
 		while (!game.GameOver)
 		{
 			GameObject bullet = ObjectPooler.SharedInstance.GetPooledObject("EnemyBomb");
@@ -37,7 +37,7 @@ public class InvaderController : MonoBehaviour
 				bullet.transform.rotation = transform.rotation;
 				bullet.SetActive(true);
   			}
-			yield return new WaitForSeconds((Random.Range(minReloadTime, maxReloadTime)));
+			yield return new WaitForSeconds(Random.Range(minReloadTime, maxReloadTime));
 		}
 	}
 
@@ -54,7 +54,7 @@ public class InvaderController : MonoBehaviour
 			gameObject.SetActive(false);
 			other.gameObject.SetActive(false);
 
-			OnPlayerScores();
+			OnPlayerScores("Invader");
 		}
 	}
 

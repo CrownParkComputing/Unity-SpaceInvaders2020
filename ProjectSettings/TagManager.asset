@@ -19,6 +19,7 @@ TagManager:
   - Invader4
   - Invader5
   - Invader6
+  - Saucer
   layers:
   - Default
   - TransparentFX
