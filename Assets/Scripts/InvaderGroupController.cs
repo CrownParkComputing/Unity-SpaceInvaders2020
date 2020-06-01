@@ -7,34 +7,35 @@ public class InvaderGroupController : MonoBehaviour
     public float startWait = 1.0f;
     public float moveSpeed = 0.2f;
     public float acceleration = 0.2f;
-    public int invadersPerRow = 12;
-    public int invaderRows = 6;
-    public int totalInvaders;
+    public readonly int invadersPerRow = 12;
+    public readonly int invaderRows = 6;
+    public readonly float maxX = 6.5f;
+    public readonly float minX = -6.5f;
 
     private Vector3 movementLeft = new Vector3(1.0f, 0.0f, 0.0f);
     private Vector3 movementRight = new Vector3(-1.0f, 0.0f, 0.0f);
 
     private bool moveLeft = true;
+    private int totalInvaders;
+
+    readonly string invaderTag = "Invader";
 
     GameManager game;
 
-    private readonly float maxX = 6.5f;
-    private readonly float minX = -6.5f;
-
-
     void OnEnable()
     {
-        GameManager.SpawnEnemyWaves+= SpawnEnemyWaves;
+        GameManager.SpawnEnemyWaves += SpawnEnemyWaves;
+        GameManager.RemoveEnemyWaves += RemoveEnemyWaves;
     }
 
     void OnDisable()
     {
         GameManager.SpawnEnemyWaves -= SpawnEnemyWaves;
+        GameManager.RemoveEnemyWaves -= RemoveEnemyWaves;
     }
 
     void Start()
     {
-
         game = GameManager.SharedInstance;
         totalInvaders = invaderRows * invadersPerRow;
     }
@@ -43,21 +44,20 @@ public class InvaderGroupController : MonoBehaviour
     void Update()
     {
 
-        if (game.GameOver) return;
+        if (game.GameOver)
+            return;
         else
         {
-            
-            string invaderTag = "Invader";
+           
             float maxSpeed = 5.0f;
             List<GameObject> invaderRow = ObjectPooler.SharedInstance.GetAllPooledObjectsByTag(invaderTag);
 
             if (invaderRow.Count < totalInvaders && moveSpeed <= maxSpeed)
-            {
-                  moveSpeed += acceleration ;
+            { 
+                moveSpeed += acceleration ;
                 totalInvaders = invaderRow.Count;
 
             }
-
 
             if (invaderRow.Count > 0)
             {
@@ -97,20 +97,19 @@ public class InvaderGroupController : MonoBehaviour
 
     void SpawnEnemyWaves()
     {
-
         float nextRowY = 8.0f;
         float nextSpawnX = -5.0f;
 
         for (int i = 1; i <= invaderRows; i++)
         {
-            
+
             for (int x = 1; x <= invadersPerRow; x++)
             {
 
                 Vector3 spawnPosition = new Vector2(nextSpawnX, nextRowY);
                 Quaternion spawnRotation = Quaternion.Euler(nextSpawnX, nextRowY, 0);
-                string invaderTag = "Invader" + i;
-                GameObject invader = ObjectPooler.SharedInstance.GetPooledObject(invaderTag);
+                string newInvader = invaderTag + i;
+                GameObject invader = ObjectPooler.SharedInstance.GetPooledObject(newInvader);
                 if (invader != null)
                 {
                     invader.transform.position = spawnPosition;
@@ -120,15 +119,19 @@ public class InvaderGroupController : MonoBehaviour
                 nextSpawnX -= 0.75f;
             }
 
-            nextRowY = nextRowY + 0.55f;
+            nextRowY += 0.55f;
             nextSpawnX = -5.0f;
-
-
-
         }
-
-
-
     }
+    void RemoveEnemyWaves()
+    {
+        List<GameObject> invaderRow = ObjectPooler.SharedInstance.GetAllPooledObjectsByTag(invaderTag);
+
+        foreach (GameObject myInvader in invaderRow)
+        {
+            myInvader.SetActive(false);
+        }
+    }
+
 
 }

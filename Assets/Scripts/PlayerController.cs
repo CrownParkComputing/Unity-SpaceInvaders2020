@@ -6,17 +6,17 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
 {
-    public int NumberofLives = 3;
+    public int playerLives = 3;
     public float moveSpeed = 1.0f;
     public float ShotTurretReloadTime = 2.0f;
+    public Vector3 startPos;
+
+    GameManager game;
 
     public GameObject playerMainGun;
 
     private List<GameObject> activePlayerTurrets;
-
-    public Vector3 startPos;
-
-    private BoxCollider2D playerCollider;
+    private int gameLives;
     new Rigidbody2D rigidbody = new Rigidbody2D();
 
     public delegate void PlayerDied();
@@ -28,21 +28,22 @@ public class PlayerController : MonoBehaviour
     private float minX = -6.5f;
     private float maxY = 6.0f;
     private float minY = -6.0f;
-
-    void Start()
-    {
-        activePlayerTurrets = new List<GameObject>();
-        activePlayerTurrets.Add(playerMainGun);
-        playerCollider = gameObject.GetComponent<BoxCollider2D>();
-
-        shootSound = gameObject.GetComponent<AudioSource>();
-        rigidbody = GetComponent<Rigidbody2D>();
-        rigidbody.simulated = false;
-    }
+    
     void OnEnable()
     {
         GameManager.OnGameStarted += OnGameStarted;
         GameManager.OnGameOverConfirmed += OnGameOverConfirmed;
+
+        rigidbody = GetComponent<Rigidbody2D>();
+        rigidbody.simulated = false;
+        rigidbody.velocity = Vector3.zero;
+
+        shootSound = gameObject.GetComponent<AudioSource>();
+        game = GameManager.SharedInstance;
+        activePlayerTurrets = new List<GameObject>
+        {
+              playerMainGun
+        };
     }
 
     void OnDisable()
@@ -50,22 +51,25 @@ public class PlayerController : MonoBehaviour
         GameManager.OnGameStarted -= OnGameStarted;
         GameManager.OnGameOverConfirmed -= OnGameOverConfirmed;
     }
-
     void OnGameStarted()
     {
-        rigidbody.velocity = Vector3.zero;
+        gameLives = playerLives;
+        transform.localPosition = startPos;
         rigidbody.simulated = true;
     }
 
     void OnGameOverConfirmed()
     {
+        rigidbody.simulated = false;
         transform.localPosition = startPos;
-        transform.rotation = Quaternion.identity;
-    }
+        gameLives = playerLives;
 
+    }
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
+        if (game.GameOver)
+            return;
         if (Input.GetKeyDown("space"))
         {
             Shoot();
@@ -84,28 +88,19 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.CompareTag("EnemyBomb"))
         {
-
-            gameObject.SetActive(false);
+            other.gameObject.SetActive(false);
             GameObject explosion = ObjectPooler.SharedInstance.GetPooledObject("Explosion");
-            explosion.transform.position = transform.position;
-            explosion.transform.rotation = transform.rotation;
-            explosion.SetActive(true);
 
             for (int i = 0; i < 8; i++)
             {
-
                 Vector3 randomOffset = new Vector3(transform.position.x + Random.Range(-0.6f, 0.6f), transform.position.y + Random.Range(-0.6f, 0.6f), 0.0f);
                 explosion.transform.position = randomOffset;
                 explosion.SetActive(true);
             }
 
-            other.gameObject.SetActive(false);
-
-            if (NumberofLives > 1)
+            if (gameLives > 1)
             {
-                gameObject.SetActive(true);
-                NumberofLives -= 1;
-
+                gameLives -= 1;
             }
             else
             {
@@ -115,12 +110,15 @@ public class PlayerController : MonoBehaviour
 
         if (other.gameObject.tag.Contains("Invader"))
         {
-            gameObject.SetActive(false);
-            GameObject explosion = ObjectPooler.SharedInstance.GetPooledObject("Explosion");
-            explosion.transform.position = transform.position;
-            explosion.transform.rotation = transform.rotation;
-            explosion.SetActive(true);
             other.gameObject.SetActive(false);
+            GameObject explosion = ObjectPooler.SharedInstance.GetPooledObject("Explosion");
+
+            for (int i = 0; i < 8; i++)
+            {
+                Vector3 randomOffset = new Vector3(transform.position.x + Random.Range(-0.6f, 0.6f), transform.position.y + Random.Range(-0.6f, 0.6f), 0.0f);
+                explosion.transform.position = randomOffset;
+                explosion.SetActive(true);
+            }
             OnPlayerDied();
         }
 
@@ -139,24 +137,10 @@ public class PlayerController : MonoBehaviour
                     bullet.transform.rotation = turret.transform.rotation;
                     bullet.SetActive(true);
                     shootSound.Play();
-                    //StartCoroutine("Delay");
                 }
             }
         }
 
     }
-
-    //IEnumerator Delay()
-    //{
-
-    //    // The ScatterShot turret is shot independantly of the spacebar
-    //    // This Coroutine shoots the scatteshot at a reload interval
-
-    //    while (true)
-    //    {
-
-    //        yield return new WaitForSeconds(0.5f);
-    //    }
-    //}
 
 }

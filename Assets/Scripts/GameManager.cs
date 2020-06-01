@@ -9,17 +9,29 @@ public class GameManager : MonoBehaviour
     public static GameManager SharedInstance;
 
     public delegate void GameDelegate();
+    public static event GameDelegate SpawnEnemyWaves;
+    public static event GameDelegate RemoveEnemyWaves;
+    public static event GameDelegate RemoveEnemyBullets;
     public static event GameDelegate OnGameStarted;
     public static event GameDelegate OnGameOverConfirmed;
-    public static event GameDelegate SpawnEnemyWaves;
+    public static event GameDelegate SpawnBases;
+    public static event GameDelegate RemoveBases;
+    public static event GameDelegate SpawnSaucers;
+
+
 
     public GameObject startPage;
     public GameObject gameOverPage;
     public GameObject countdownPage;
-    public Text scoreText;
-   
-    int score = 0;
-    bool gameOver = true;
+    public GameObject gameEnvironment;
+    public Text currentScore;
+    public Text highScore;
+
+    private int score;
+    private int high;
+
+    private bool gameOver = true;
+
     public bool GameOver { get { return gameOver; } }
     public int Score { get { return score; } }
 
@@ -53,8 +65,12 @@ public class GameManager : MonoBehaviour
     {
         CountdownText.OnCountdownFinished += OnCountdownFinished;
         InvaderController.OnPlayerScores += OnPlayerScored;
+        SaucerController.OnPlayerScores += OnPlayerScored;
         PlayerController.OnPlayerDied += OnPlayerDied;
+
         SetPageState(PageState.Start);
+        high = PlayerPrefs.GetInt("Highscore");
+        highScore.text = high.ToString("D6");
     }
 
     void OnDisable()
@@ -62,32 +78,56 @@ public class GameManager : MonoBehaviour
         CountdownText.OnCountdownFinished -= OnCountdownFinished;
         InvaderController.OnPlayerScores -= OnPlayerScored;
         PlayerController.OnPlayerDied -= OnPlayerDied;
+        SaucerController.OnPlayerScores -= OnPlayerScored;
     }
 
 
     void OnCountdownFinished()
     {
-        SpawnEnemyWaves();
         SetPageState(PageState.None);
+        SpawnBases();
+        SpawnEnemyWaves();
+        SpawnSaucers();
         OnGameStarted();
         score = 0;
         gameOver = false;
     }
-    void OnPlayerScored()
+    void OnPlayerScored(string whatHit)
     {
-        score += 50;
-        scoreText.text = "Score : " + score.ToString();
+        switch (whatHit)
+        {
+            case "Saucer":
+                score += 500;
+
+                break;
+
+            case "Invader":
+                score += 200;
+
+                break;
+            case "Bomb":
+                score += 50;
+
+                break;
+        }
+
+        currentScore.text = score.ToString("D6");
     }
     void OnPlayerDied()
     {
         gameOver = true;
-        int savedScore = PlayerPrefs.GetInt("Highscore");
-        if (score > savedScore)
-        {
-            PlayerPrefs.SetInt("Highscore", score);
-        }
-        SetPageState(PageState.GameOver);
 
+        if (score > high)
+        {
+            high = score;
+            PlayerPrefs.SetInt("Highscore", high);
+            highScore.text = high.ToString("D6");
+        }
+        OnGameOverConfirmed();
+        RemoveEnemyBullets();
+        RemoveEnemyWaves();
+        RemoveBases();
+        SetPageState(PageState.GameOver);
     }
 
     void SetPageState(PageState state)
@@ -98,24 +138,28 @@ public class GameManager : MonoBehaviour
                 startPage.SetActive(false);
                 gameOverPage.SetActive(false);
                 countdownPage.SetActive(false);
+                gameEnvironment.SetActive(true);
 
                 break;
             case PageState.Start:
                 startPage.SetActive(true);
                 gameOverPage.SetActive(false);
                 countdownPage.SetActive(false);
+                gameEnvironment.SetActive(false);
 
                 break;
             case PageState.GameOver:
                 startPage.SetActive(false);
                 gameOverPage.SetActive(true);
                 countdownPage.SetActive(false);
+                gameEnvironment.SetActive(false);
 
                 break;
             case PageState.Countdown:
                 startPage.SetActive(false);
                 gameOverPage.SetActive(false);
                 countdownPage.SetActive(true);
+                gameEnvironment.SetActive(false);
 
                 break;
 
@@ -125,10 +169,9 @@ public class GameManager : MonoBehaviour
     public void ConfirmGameOver()
     // activate when replay hit
     {
-        OnGameOverConfirmed(); //event
         SetPageState(PageState.Start);
         score = 0;
-        scoreText.text = "Score : " + score.ToString();
+        currentScore.text = score.ToString("D6");
     }
 
     public void StartGame()

@@ -8,7 +8,6 @@ public class ObjectPoolItem
     public int amountToPool;
     public GameObject objectToPool;
     public GameObject storeHere;
-
     public bool shouldExpand;
 }
 
@@ -17,7 +16,7 @@ public class ObjectPooler : MonoBehaviour
     public List<ObjectPoolItem> itemsToPool;
     public static ObjectPooler SharedInstance;
     public List<GameObject> pooledObjects;
-    public List<GameObject> pooledObjectByTag;
+    public List<GameObject> pooledObjectsByTag;
 
 
     void Awake()
@@ -25,7 +24,7 @@ public class ObjectPooler : MonoBehaviour
         SharedInstance = this;
     }
 
-    void Start()
+    void OnEnable()
     {
         pooledObjects = new List<GameObject>();
         foreach (ObjectPoolItem item in itemsToPool)
@@ -40,6 +39,13 @@ public class ObjectPooler : MonoBehaviour
             }
         }
     }
+
+    private void OnDisable()
+    {
+        pooledObjects = null;
+        pooledObjectsByTag = null;
+    }
+
     public GameObject GetPooledObject(string tag)
     {
         for (int i = 0; i < pooledObjects.Count; i++)
@@ -68,15 +74,15 @@ public class ObjectPooler : MonoBehaviour
     public List<GameObject> GetAllPooledObjectsByTag(string tag)
     {
 
-        pooledObjectByTag = new List<GameObject>();
+        pooledObjectsByTag = new List<GameObject>();
         for (int i = 0; i < pooledObjects.Count; i++)
         {
             if (pooledObjects[i].activeInHierarchy && pooledObjects[i].tag.Contains(tag))
         {
-                pooledObjectByTag.Add(pooledObjects[i]);
+                pooledObjectsByTag.Add(pooledObjects[i]);
             }
         }
 
-        return pooledObjectByTag;
+        return pooledObjectsByTag;
     }
 }
