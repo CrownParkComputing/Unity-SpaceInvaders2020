@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
     public static event GameDelegate SpawnBases;
     public static event GameDelegate RemoveBases;
     public static event GameDelegate SpawnSaucers;
-
+    public static event GameDelegate StartInvaderBombs;
 
 
     public GameObject startPage;
@@ -67,6 +67,7 @@ public class GameManager : MonoBehaviour
         InvaderController.OnPlayerScores += OnPlayerScored;
         SaucerController.OnPlayerScores += OnPlayerScored;
         PlayerController.OnPlayerDied += OnPlayerDied;
+        InvaderGroupController.StartNewWave += StartNewWave;
 
         SetPageState(PageState.Start);
         high = PlayerPrefs.GetInt("Highscore");
@@ -79,6 +80,7 @@ public class GameManager : MonoBehaviour
         InvaderController.OnPlayerScores -= OnPlayerScored;
         PlayerController.OnPlayerDied -= OnPlayerDied;
         SaucerController.OnPlayerScores -= OnPlayerScored;
+        InvaderGroupController.StartNewWave += StartNewWave;
     }
 
 
@@ -112,6 +114,9 @@ public class GameManager : MonoBehaviour
         }
 
         currentScore.text = score.ToString("D6");
+
+        if (Score > high)
+        { highScore.text = currentScore.text; }
     }
     void OnPlayerDied()
     {
@@ -128,6 +133,14 @@ public class GameManager : MonoBehaviour
         RemoveEnemyWaves();
         RemoveBases();
         SetPageState(PageState.GameOver);
+    }
+
+    void StartNewWave()
+    {
+        RemoveEnemyBullets();
+        RemoveEnemyWaves();
+        SpawnEnemyWaves();
+        StartInvaderBombs();
     }
 
     void SetPageState(PageState state)

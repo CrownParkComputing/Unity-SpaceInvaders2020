@@ -13,19 +13,34 @@ public class InvaderController : MonoBehaviour
 	
 	GameManager game;
 
-    void Start()
+	void OnEnable()
+	{
+		GameManager.StartInvaderBombs += StartInvaderBombs;
+	}
+
+	void OnDisable()
+	{
+		GameManager.StartInvaderBombs -= StartInvaderBombs;
+
+	}
+
+	void Start()
 	{
 		game = GameManager.SharedInstance;
-		StartCoroutine("Shoot");
+        StartInvaderBombs();
 	}
 
 	void Update()
 	{
 		if (game.GameOver)
-			StopCoroutine("Shoot");
+			StopCoroutine("StartShooting");
 	}
 
-	IEnumerator Shoot()
+	void StartInvaderBombs()
+    {
+		StartCoroutine("StartShooting");
+	}
+	IEnumerator StartShooting()
 	{
 		yield return new WaitForSeconds(Random.Range(minReloadTime, maxReloadTime));
 		while (!game.GameOver)

@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class InvaderGroupController : MonoBehaviour
 {
-    public float startWait = 1.0f;
-    public float moveSpeed = 0.2f;
-    public float acceleration = 0.2f;
+    public float moveSpeedDefault = 0.5f;
+    public float audioSpeedIncrease = 0.02f;
+    public float moveAcceleration = 0.02f;
     public readonly int invadersPerRow = 12;
     public readonly int invaderRows = 6;
     public readonly float maxX = 6.5f;
@@ -15,10 +15,21 @@ public class InvaderGroupController : MonoBehaviour
     private Vector3 movementLeft = new Vector3(1.0f, 0.0f, 0.0f);
     private Vector3 movementRight = new Vector3(-1.0f, 0.0f, 0.0f);
 
+    public delegate void NewWave();
+    public static event NewWave StartNewWave;
+
     private bool moveLeft = true;
     private int totalInvaders;
+    private float audwaitdef = 1.5f;
+    public float audwait;
+    public float moveSpeed;
 
     readonly string invaderTag = "Invader";
+    private int whichSound = 1;
+    public AudioClip sound1;
+    public AudioClip sound2;
+
+    private AudioSource invaderSound;
 
     GameManager game;
 
@@ -26,6 +37,10 @@ public class InvaderGroupController : MonoBehaviour
     {
         GameManager.SpawnEnemyWaves += SpawnEnemyWaves;
         GameManager.RemoveEnemyWaves += RemoveEnemyWaves;
+
+        invaderSound = gameObject.GetComponent<AudioSource>();
+        audwait = audwaitdef - audioSpeedIncrease;
+        moveSpeed = moveSpeedDefault;
     }
 
     void OnDisable()
@@ -34,10 +49,11 @@ public class InvaderGroupController : MonoBehaviour
         GameManager.RemoveEnemyWaves -= RemoveEnemyWaves;
     }
 
+
     void Start()
     {
         game = GameManager.SharedInstance;
-        totalInvaders = invaderRows * invadersPerRow;
+        
     }
 
 
@@ -49,18 +65,53 @@ public class InvaderGroupController : MonoBehaviour
         else
         {
            
-            float maxSpeed = 5.0f;
+            float maxSpeed = 10.0f;
+
+
             List<GameObject> invaderRow = ObjectPooler.SharedInstance.GetAllPooledObjectsByTag(invaderTag);
+
+            if (invaderRow.Count <=0)
+            {
+                StartNewWave();
+            }
 
             if (invaderRow.Count < totalInvaders && moveSpeed <= maxSpeed)
             { 
-                moveSpeed += acceleration ;
+                moveSpeed += (moveAcceleration);
                 totalInvaders = invaderRow.Count;
-
+                audwait = audwaitdef - audioSpeedIncrease;
             }
 
             if (invaderRow.Count > 0)
-            {
+            {    
+                if (audwait <= 0f)
+                {
+                    
+                    if (whichSound == 1)
+                    {
+                        if (!invaderSound.isPlaying)
+                        {
+                            invaderSound.clip = sound1;
+                            invaderSound.Play();
+                            whichSound += 1;
+                        }
+
+                    }
+                    else
+                    {
+                        if (!invaderSound.isPlaying)
+                        {
+                            invaderSound.clip = sound2;
+                            invaderSound.Play();
+                            whichSound = 1;
+                        }
+                    }
+
+
+                }
+                audwait -= Time.deltaTime;
+
+
                 foreach (GameObject item in invaderRow)
                 {
                     if (item.transform.position.x >= maxX)
@@ -85,11 +136,13 @@ public class InvaderGroupController : MonoBehaviour
 
 
                     }
-
+                    
                     if (moveLeft == true)
                         item.transform.Translate(movementLeft * Time.deltaTime * moveSpeed);
                     else
                         item.transform.Translate(movementRight * Time.deltaTime * moveSpeed);
+
+
                 }
             }
         }
@@ -99,6 +152,10 @@ public class InvaderGroupController : MonoBehaviour
     {
         float nextRowY = 8.0f;
         float nextSpawnX = -5.0f;
+        moveSpeed = moveSpeedDefault;
+        audwait = audwaitdef;
+        totalInvaders = invaderRows * invadersPerRow;
+
 
         for (int i = 1; i <= invaderRows; i++)
         {
